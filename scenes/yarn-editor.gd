@@ -83,7 +83,7 @@ func clear_canvas():
 func build_canvas():
 	if not yarn:
 		return
-	# BUILD YARN BOXES
+	# build yarn boxes
 	var auto_position := Vector2(default_margin_x, default_margin_y)
 	var widest_x := 0
 	var widest_y := 0

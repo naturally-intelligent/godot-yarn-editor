@@ -138,7 +138,8 @@ func load_yarn(path: String) -> Dictionary:
 				if line == '---':
 					header = false
 				else:
-					thread['raw_header'] += line + "\n"
+					if line and line != '===':
+						thread['raw_header'] += line + "\n"
 					var split := line.split(': ', true, 2)
 					if split.size() == 2:
 						thread['header'][split[0]] = split[1]
