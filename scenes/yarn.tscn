@@ -65,20 +65,21 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "Filename"
 
-[node name="TitleEdit" type="LineEdit" parent="HBox/LeftPane"]
+[node name="NodeTitle" type="Label" parent="HBox/LeftPane"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "TITLE"
-alignment = 1
+horizontal_alignment = 1
+vertical_alignment = 1
 
-[node name="HeaderEdit" type="TextEdit" parent="HBox/LeftPane"]
+[node name="NodeHeader" type="TextEdit" parent="HBox/LeftPane"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 80)
 layout_mode = 2
 text = "header: value"
 wrap_mode = 1
 
-[node name="Resizable" type="Control" parent="HBox/LeftPane/HeaderEdit"]
+[node name="Resizable" type="Control" parent="HBox/LeftPane/NodeHeader"]
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
@@ -87,7 +88,7 @@ script = ExtResource("2_xiv2h")
 mode = 1
 active_handles = 2
 
-[node name="TextEdit" type="TextEdit" parent="HBox/LeftPane"]
+[node name="NodeText" type="TextEdit" parent="HBox/LeftPane"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
@@ -95,20 +96,21 @@ text = "All the text inside one of the boxes
 asdfasdf"
 wrap_mode = 1
 
-[node name="HSeparator2" type="HSeparator" parent="HBox/LeftPane"]
-layout_mode = 2
-
 [node name="BottomToolbar" type="HBoxContainer" parent="HBox/LeftPane"]
 layout_mode = 2
-alignment = 2
 
-[node name="Fit" type="Button" parent="HBox/LeftPane/BottomToolbar"]
+[node name="UpdateHeader" type="Button" parent="HBox/LeftPane/BottomToolbar"]
+unique_name_in_owner = true
+auto_translate_mode = 1
 layout_mode = 2
-text = "FIT"
+text = "COMMIT HEADER CHANGES"
 
-[node name="Delete" type="Button" parent="HBox/LeftPane/BottomToolbar"]
+[node name="DeleteNode" type="Button" parent="HBox/LeftPane/BottomToolbar"]
 layout_mode = 2
 text = "DELETE"
+
+[node name="HSeparator2" type="HSeparator" parent="HBox/LeftPane"]
+layout_mode = 2
 
 [node name="Resizable" type="Control" parent="HBox/LeftPane"]
 layout_mode = 2
@@ -162,6 +164,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_6p7c0")
 [connection signal="pressed" from="HBox/LeftPane/TopToolbar/Save" to="." method="_on_save_pressed"]
 [connection signal="pressed" from="HBox/LeftPane/TopToolbar/Load" to="." method="_on_load_pressed"]
 [connection signal="pressed" from="HBox/LeftPane/TopToolbar/LoadTest" to="." method="_on_load_test_pressed"]
-[connection signal="text_changed" from="HBox/LeftPane/TitleEdit" to="." method="_on_title_text_changed"]
-[connection signal="text_changed" from="HBox/LeftPane/HeaderEdit" to="." method="_on_header_text_changed"]
-[connection signal="text_changed" from="HBox/LeftPane/TextEdit" to="." method="_on_body_text_changed"]
+[connection signal="text_changed" from="HBox/LeftPane/NodeHeader" to="." method="_on_header_text_changed"]
+[connection signal="text_changed" from="HBox/LeftPane/NodeText" to="." method="_on_body_text_changed"]
+[connection signal="pressed" from="HBox/LeftPane/BottomToolbar/UpdateHeader" to="." method="_on_update_header_pressed"]
+[connection signal="pressed" from="HBox/LeftPane/BottomToolbar/DeleteNode" to="." method="_on_delete_pressed"]

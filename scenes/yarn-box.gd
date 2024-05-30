@@ -17,12 +17,16 @@ var yarn_editor: YarnEditor
 
 func _ready() -> void:
 	pass
+	
+func update_text(text: String):
+	text = text.replace("\\n", " ")
+	%Text.text = text
 
 func parse_thread(yarn: Dictionary, thread_title: String):
 	title = thread_title
 	var thread: Dictionary = yarn['threads'][thread_title]
 	%Title.text = thread_title
-	%Text.text = thread['raw_body']
+	update_text(thread['raw_body'])
 	if 'position' in thread['header']:
 		var vec_string = thread['header']['position']
 		var vec_split = vec_string.split(',')
@@ -97,17 +101,47 @@ func dragging_mouse_cursor():
 
 func get_string_starting_point(choice_marker: String, destination_box: YarnBox) -> Vector2:
 	var center = get_center_point()
-	return center
+	var destination = destination_box.get_center_point()
+	var intersect = segment_intersect_rect2(center, destination, get_rect())
+	return intersect
 
 func get_string_destination_point(choice_marker: String, starting_box: YarnBox) -> Vector2:
 	var center = get_center_point()
-	return center
+	var destination = starting_box.get_center_point()
+	var intersect = segment_intersect_rect2(center, destination, get_rect())
+	return intersect
 
 func get_center_point() -> Vector2:
 	return position + size/2
 
+func segment_intersect_rect2(from: Vector2, to: Vector2, rect2: Rect2) -> Variant:
+	var intersections := []
+	var left_test = Geometry2D.segment_intersects_segment(from, to, Vector2(rect2.position.x, rect2.position.y), Vector2(rect2.position.x, rect2.end.y))
+	var right_test = Geometry2D.segment_intersects_segment(from, to, Vector2(rect2.end.x, rect2.position.y), Vector2(rect2.end.x, rect2.end.y))
+	var top_test = Geometry2D.segment_intersects_segment(from, to, Vector2(rect2.position.x, rect2.position.y), Vector2(rect2.end.x, rect2.position.y))
+	var bottom_test = Geometry2D.segment_intersects_segment(from, to, Vector2(rect2.position.x, rect2.end.y), Vector2(rect2.end.x, rect2.end.y))
+	if left_test: intersections.append(left_test)
+	if right_test: intersections.append(right_test)
+	if top_test: intersections.append(top_test)
+	if bottom_test: intersections.append(bottom_test)
+	if intersections.size() == 1:
+		return intersections[0]
+	return closest_point(from, intersections)
+
+func closest_point(origin: Vector2, targets: Array, closest_distance := 1000000.0) -> Vector2:
+	var closest = null
+	for target: Vector2 in targets:
+		var target_distance := origin.distance_to(target)
+		if target_distance < closest_distance:
+			closest_distance = target_distance
+			closest = target
+	if closest:
+		return closest
+	return origin
+	
 # RESIZE
 
 func _on_resized():
 	yarn_editor.update_thread(title, "header", "size", str(size.x) + ',' + str(size.y))
 	yarn_editor.reconnect_box_strings(title)
+

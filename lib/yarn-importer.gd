@@ -339,3 +339,46 @@ func yarn_as_text(_yarn: Dictionary) -> String:
 		text += thread['raw_body']
 		text += "===\n\n"
 	return text
+
+func yarn_header_attributes(raw_header: String) -> Dictionary:
+	var header := {}
+	for line in raw_header.split("\n"):
+		var split := line.split(': ', true, 2)
+		if split.size() == 2:
+			header[split[0]] = split[1]
+			if split[0] == 'title':
+				var title_split := split[1].split(':')
+				var thread_title := ''
+				var thread_kind := 'branch'
+				if len(title_split) == 1:
+					thread_title = split[1]
+				else:
+					thread_title = title_split[1]
+					thread_kind = title_split[0]
+				header['title'] = thread_title
+	return header
+	
+# HEADER ATTRIBUTES
+
+func set_attribute(thread: Dictionary, attribute: String, value: String) -> Dictionary:
+	thread['header'][attribute] = value
+	return thread
+	
+func has_attribute(thread: Dictionary, attribute: String) -> bool:
+	return attribute in thread['header']
+
+func get_attribute(thread: Dictionary, attribute: String) -> String:
+	if attribute in thread['header']:
+		return thread['header']
+	return ''
+	
+func set_attribute_boolean(thread: Dictionary, attribute: String, value: bool):
+	if value:
+		thread['header'][attribute] = 'true'
+	else:
+		thread['header'][attribute] = 'false'
+
+func get_attribute_boolean(thread: Dictionary, attribute: String) -> bool:
+	if attribute in thread['header']:
+		return (thread['header'] == 'true')
+	return false

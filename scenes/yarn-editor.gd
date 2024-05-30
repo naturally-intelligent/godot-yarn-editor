@@ -9,7 +9,6 @@ var yarn: Dictionary
 
 var current_file: String
 var current_thread: String
-var current_box: YarnBox
 
 var yarn_boxes := {} # pointers
 var yarn_strings := {} # pointers
@@ -25,6 +24,7 @@ const yarn_string_tscn = preload("res://scenes/yarn-string.tscn")
 func _ready() -> void:
 	yarn_importer = YarnImporter.new()
 	clear_canvas()
+	clear_editor()
 	set_status("Ready")
 	# test
 	_on_load_test_pressed()
@@ -78,6 +78,8 @@ func clear_canvas():
 	yarn_boxes = {}
 	for child in %Canvas.get_children():
 		child.queue_free()
+	yarn_boxes = {}
+	yarn_strings = {}
 	clear_editor()
 	
 func build_canvas():
@@ -142,6 +144,7 @@ func connect_box_strings(thread_title: String, first_build := false):
 				string.set_string_line(from_position, to_position)
 				string.set_label(marker)
 				remember_box_string(thread_title, marker, string)
+				# while we could store these inside each box, its annoying to handle coordinates
 				%Canvas.add_child(string)
 			else:
 				# only need to show this warning on first load
@@ -169,12 +172,26 @@ func clear_box_strings(thread_title: String):
 			yarn_string.queue_free()
 		yarn_strings[thread_title] = {}
 
+func delete_box_strings(thread_title: String):
+	if thread_title in yarn_strings:
+		for marker in yarn_strings[thread_title]:
+			var yarn_string = yarn_strings[thread_title][marker]
+			yarn_string.queue_free()
+		yarn_strings.erase(thread_title)
+	for title_test in yarn_strings:
+		for marker in yarn_strings[title_test]:
+			if marker == thread_title:
+				yarn_strings[title_test][marker].queue_free()
+				yarn_strings[title_test].erase(marker)
+		
 # EDITOR
 
 func clear_editor():
-	%HeaderEdit.text = ''
-	%TitleEdit.text = ''
-	%TextEdit.text = ''
+	%NodeTitle.text = ''
+	%NodeHeader.text = ''
+	%NodeText.text = ''
+	current_thread = ''
+	%UpdateHeader.disabled = false
 		
 func _on_thread_pressed(thread_title: String, yarn_box):
 	update_editor(thread_title)
@@ -184,10 +201,11 @@ func update_editor(thread_title: String):
 		print("ERROR! missing yarn thread: ", thread_title)
 		return
 	var yarn_thread = yarn['threads'][thread_title]
-	%HeaderEdit.text = yarn_thread['raw_header']
-	%TitleEdit.text = thread_title
-	%TextEdit.text = yarn_thread['raw_body']
+	%NodeTitle.text = thread_title
+	%NodeHeader.text = yarn_thread['raw_header']
+	%NodeText.text = yarn_thread['raw_body']
 	current_thread = thread_title
+	%UpdateHeader.disabled = true
 
 func update_thread(thread_title: String, section: String, attribute: String, value: String):
 	yarn['threads'][thread_title][section][attribute] = value
@@ -203,12 +221,46 @@ func recalculate_raw_header(thread_title: String):
 		raw_header += key + ': ' + value + "\n"
 	yarn['threads'][thread_title]['raw_header'] = raw_header
 
-func _on_title_text_changed(new_text):
-	pass
-
 func _on_header_text_changed():
-	yarn['threads'][current_thread]['raw_header'] = %HeaderEdit.text
-	# recalculate header
+	%UpdateHeader.disabled = false
+	
+func _on_update_header_pressed() -> void:
+	if current_thread and current_thread in yarn_boxes:
+		var old_thread = yarn['threads'][current_thread]
+		var new_attributes = yarn_importer.yarn_header_attributes(%NodeHeader.text)
+		if not 'title' in new_attributes:
+			set_status("Missing 'title' in header. Ignoring")
+			return
+		if new_attributes['title'] != current_thread:
+			var new_title = new_attributes['title']
+			yarn['threads'][new_title] = yarn['threads'][current_thread].duplicate(true)
+			yarn['threads'][new_title]['raw_header'] = %NodeHeader.text
+			yarn['threads'][new_title]['header'] = new_attributes
+			yarn['threads'].erase(current_thread)
+			clear_canvas()
+			build_canvas()
+			update_editor(new_title)
+		else:
+			yarn['threads'][current_thread]['raw_header'] = %NodeHeader.text
+			yarn['threads'][current_thread]['header'] = new_attributes
+			var yarn_box: YarnBox = yarn_boxes[current_thread]
+			yarn_box.parse_thread(yarn, current_thread)
+			reconnect_box_strings(current_thread)
 
 func _on_body_text_changed():
-	yarn['threads'][current_thread]['raw_body'] = %TextEdit.text
+	if current_thread and current_thread in yarn_boxes:
+		yarn['threads'][current_thread]['raw_body'] = %NodeText.text
+		var yarn_box = yarn_boxes[current_thread]
+		yarn_box.update_text(%NodeText.text)
+
+# DELETE
+
+func delete_thread(thread_name: String):
+	delete_box_strings(thread_name)
+	yarn_boxes[thread_name].queue_free()
+	yarn_boxes.erase(thread_name)
+	set_status("Deleted " + thread_name)
+
+func _on_delete_pressed() -> void:
+	if current_thread:
+		delete_thread(current_thread)
