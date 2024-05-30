@@ -2,6 +2,8 @@
 extends Control
 class_name YarnBox
 
+#test comment
+
 var title: String
 
 var _dragging := false
