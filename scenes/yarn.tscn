@@ -1,0 +1,169 @@
+[gd_scene load_steps=4 format=3 uid="uid://cbmstr0aaq3rt"]
+
+[ext_resource type="Script" path="res://scenes/yarn-editor.gd" id="1_dvvs5"]
+[ext_resource type="PackedScene" uid="uid://203w0hfj8nm2" path="res://scenes/yarn-box.tscn" id="2_jrpsg"]
+[ext_resource type="Script" path="res://addons/eranot.resizable/resizable.gd" id="2_xiv2h"]
+
+[node name="YarnEditor" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_dvvs5")
+metadata/_edit_vertical_guides_ = [-395.0]
+
+[node name="HBox" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="LeftPane" type="VBoxContainer" parent="HBox"]
+custom_minimum_size = Vector2(500, 0)
+layout_mode = 2
+
+[node name="TopToolbar" type="HBoxContainer" parent="HBox/LeftPane"]
+layout_mode = 2
+
+[node name="New" type="Button" parent="HBox/LeftPane/TopToolbar"]
+layout_mode = 2
+text = "NEW"
+
+[node name="LoadTest" type="Button" parent="HBox/LeftPane/TopToolbar"]
+layout_mode = 2
+text = "LOAD (test)"
+
+[node name="Save" type="Button" parent="HBox/LeftPane/TopToolbar"]
+layout_mode = 2
+text = "SAVE"
+
+[node name="Load" type="Button" parent="HBox/LeftPane/TopToolbar"]
+layout_mode = 2
+text = "LOAD"
+
+[node name="HSeparator1" type="HSeparator" parent="HBox/LeftPane"]
+layout_mode = 2
+
+[node name="Filename" type="Label" parent="HBox/LeftPane"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Filename"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="TitleEdit" type="LineEdit" parent="HBox/LeftPane"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "TITLE"
+alignment = 1
+
+[node name="TextEdit" type="TextEdit" parent="HBox/LeftPane"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+text = "All the text inside one of the boxes
+asdfasdf"
+wrap_mode = 1
+
+[node name="HSeparator2" type="HSeparator" parent="HBox/LeftPane"]
+layout_mode = 2
+
+[node name="BottomToolbar" type="HBoxContainer" parent="HBox/LeftPane"]
+layout_mode = 2
+alignment = 2
+
+[node name="Delete" type="Button" parent="HBox/LeftPane/BottomToolbar"]
+layout_mode = 2
+text = "DELETE"
+
+[node name="Resizable" type="Control" parent="HBox/LeftPane"]
+layout_mode = 2
+mouse_filter = 2
+script = ExtResource("2_xiv2h")
+mode = 1
+active_handles = 8
+
+[node name="StatusBar" type="Panel" parent="HBox/LeftPane"]
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+
+[node name="Status" type="Label" parent="HBox/LeftPane/StatusBar"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Status"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="VSeparator" type="VSeparator" parent="HBox"]
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+follow_focus = true
+horizontal_scroll_mode = 2
+vertical_scroll_mode = 2
+
+[node name="Canvas" type="Control" parent="HBox/ScrollContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(2000, 2000)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ColorRect" type="ColorRect" parent="HBox/ScrollContainer/Canvas"]
+layout_mode = 2
+offset_left = 442.0
+offset_top = 552.0
+offset_right = 803.0
+offset_bottom = 752.0
+color = Color(0.521141, 0.521141, 0.521141, 1)
+
+[node name="ColorRect2" type="ColorRect" parent="HBox/ScrollContainer/Canvas"]
+layout_mode = 2
+offset_left = 271.0
+offset_top = 73.0
+offset_right = 728.0
+offset_bottom = 331.0
+color = Color(0.521141, 0.521141, 0.521141, 1)
+
+[node name="ColorRect3" type="ColorRect" parent="HBox/ScrollContainer/Canvas"]
+layout_mode = 2
+offset_left = 862.0
+offset_top = 105.0
+offset_right = 1349.0
+offset_bottom = 307.0
+color = Color(0.521141, 0.521141, 0.521141, 1)
+
+[node name="YarnBox" parent="HBox/ScrollContainer/Canvas" instance=ExtResource("2_jrpsg")]
+layout_mode = 0
+offset_left = 55.0
+offset_top = 50.0
+offset_right = 425.0
+offset_bottom = 438.0
+
+[node name="YarnBox2" parent="HBox/ScrollContainer/Canvas" instance=ExtResource("2_jrpsg")]
+layout_mode = 0
+offset_left = 853.0
+offset_top = 289.0
+offset_right = 1120.0
+offset_bottom = 473.0
+
+[node name="YarnBox3" parent="HBox/ScrollContainer/Canvas" instance=ExtResource("2_jrpsg")]
+layout_mode = 0
+offset_left = 309.0
+offset_top = 454.0
+offset_right = 581.0
+offset_bottom = 690.0
+
+[connection signal="pressed" from="HBox/LeftPane/TopToolbar/New" to="." method="_on_new_pressed"]
+[connection signal="pressed" from="HBox/LeftPane/TopToolbar/LoadTest" to="." method="_on_load_test_pressed"]

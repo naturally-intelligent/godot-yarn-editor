@@ -1,0 +1,46 @@
+[gd_scene load_steps=3 format=3 uid="uid://203w0hfj8nm2"]
+
+[ext_resource type="Script" path="res://addons/eranot.resizable/resizable.gd" id="1_56s52"]
+[ext_resource type="Script" path="res://scenes/yarn-box.gd" id="1_sxn1s"]
+
+[node name="YarnBox" type="Button"]
+offset_right = 370.0
+offset_bottom = 388.0
+script = ExtResource("1_sxn1s")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Title" type="Label" parent="VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "TITLE"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Text" type="RichTextLabel" parent="VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+text = "text to edit
+inside a box"
+
+[node name="BottomPanel" type="Panel" parent="VBoxContainer"]
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+
+[node name="Resizable" type="Control" parent="."]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+mouse_filter = 2
+script = ExtResource("1_56s52")
+
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]
