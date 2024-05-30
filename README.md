@@ -1,6 +1,10 @@
 # godot-yarn-editor
 An editor for Yarn files built in Godot 4
 
+<p align="center">
+  <img src="media/godot-yarn-editor-screen1.png">
+</p>
+
 ## Why
 
 Can't seem to find just a basic editor that isn't in a browser..

@@ -1,12 +1,28 @@
-[gd_scene load_steps=3 format=3 uid="uid://203w0hfj8nm2"]
+[gd_scene load_steps=7 format=3 uid="uid://203w0hfj8nm2"]
 
 [ext_resource type="Script" path="res://addons/eranot.resizable/resizable.gd" id="1_56s52"]
 [ext_resource type="Script" path="res://scenes/yarn-box.gd" id="1_sxn1s"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5lq1m"]
+bg_color = Color(0.259294, 0.259294, 0.259294, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3iuru"]
+bg_color = Color(0.180005, 0.180005, 0.180005, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_okqtn"]
+bg_color = Color(0.262932, 0.262932, 0.262932, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jsofe"]
+bg_color = Color(0.118581, 0.118581, 0.118581, 1)
+
 [node name="YarnBox" type="Button"]
 z_index = 1
-offset_right = 370.0
-offset_bottom = 388.0
+offset_right = 295.0
+offset_bottom = 123.0
+theme_override_styles/focus = SubResource("StyleBoxFlat_5lq1m")
+theme_override_styles/hover = SubResource("StyleBoxFlat_3iuru")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_okqtn")
+theme_override_styles/normal = SubResource("StyleBoxFlat_jsofe")
 script = ExtResource("1_sxn1s")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
@@ -20,6 +36,7 @@ grow_vertical = 2
 [node name="Title" type="Label" parent="VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_font_sizes/font_size = 11
 text = "TITLE"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -29,6 +46,7 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 2
+theme_override_font_sizes/normal_font_size = 9
 text = "text to edit
 inside a box"
 
@@ -43,5 +61,7 @@ offset_bottom = 40.0
 mouse_filter = 2
 script = ExtResource("1_56s52")
 
+[connection signal="focus_exited" from="." to="." method="_on_focus_exited"]
 [connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]
+[connection signal="resized" from="." to="." method="_on_resized"]

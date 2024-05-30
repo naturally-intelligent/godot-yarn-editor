@@ -1,8 +1,9 @@
 [gd_scene load_steps=4 format=3 uid="uid://cbmstr0aaq3rt"]
 
 [ext_resource type="Script" path="res://scenes/yarn-editor.gd" id="1_dvvs5"]
-[ext_resource type="PackedScene" uid="uid://203w0hfj8nm2" path="res://scenes/yarn-box.tscn" id="2_jrpsg"]
 [ext_resource type="Script" path="res://addons/eranot.resizable/resizable.gd" id="2_xiv2h"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6p7c0"]
 
 [node name="YarnEditor" type="Control"]
 layout_mode = 3
@@ -35,10 +36,12 @@ layout_mode = 2
 text = "NEW"
 
 [node name="Save" type="Button" parent="HBox/LeftPane/TopToolbar"]
+unique_name_in_owner = true
 layout_mode = 2
 text = "SAVE"
 
 [node name="Load" type="Button" parent="HBox/LeftPane/TopToolbar"]
+unique_name_in_owner = true
 layout_mode = 2
 text = "LOAD"
 
@@ -57,12 +60,10 @@ text = "LoadTest"
 [node name="HSeparator1" type="HSeparator" parent="HBox/LeftPane"]
 layout_mode = 2
 
-[node name="Filename" type="Label" parent="HBox/LeftPane"]
+[node name="Filename" type="LineEdit" parent="HBox/LeftPane"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Filename"
-horizontal_alignment = 1
-vertical_alignment = 1
 
 [node name="TitleEdit" type="LineEdit" parent="HBox/LeftPane"]
 unique_name_in_owner = true
@@ -144,55 +145,23 @@ vertical_scroll_mode = 2
 
 [node name="Canvas" type="Control" parent="HBox/ScrollContainer"]
 unique_name_in_owner = true
+z_index = -1
 custom_minimum_size = Vector2(2000, 2000)
 layout_mode = 2
 size_flags_horizontal = 3
-size_flags_vertical = 3
 
-[node name="ColorRect" type="ColorRect" parent="HBox/ScrollContainer/Canvas"]
+[node name="Panel" type="Panel" parent="."]
+visible = false
 layout_mode = 2
-offset_left = 442.0
-offset_top = 552.0
-offset_right = 803.0
-offset_bottom = 752.0
-color = Color(0.521141, 0.521141, 0.521141, 1)
-
-[node name="ColorRect2" type="ColorRect" parent="HBox/ScrollContainer/Canvas"]
-layout_mode = 2
-offset_left = 271.0
-offset_top = 73.0
-offset_right = 728.0
-offset_bottom = 331.0
-color = Color(0.521141, 0.521141, 0.521141, 1)
-
-[node name="ColorRect3" type="ColorRect" parent="HBox/ScrollContainer/Canvas"]
-layout_mode = 2
-offset_left = 862.0
-offset_top = 105.0
-offset_right = 1349.0
-offset_bottom = 307.0
-color = Color(0.521141, 0.521141, 0.521141, 1)
-
-[node name="YarnBox" parent="HBox/ScrollContainer/Canvas" instance=ExtResource("2_jrpsg")]
-layout_mode = 0
-offset_left = 55.0
-offset_top = 50.0
-offset_right = 425.0
-offset_bottom = 438.0
-
-[node name="YarnBox2" parent="HBox/ScrollContainer/Canvas" instance=ExtResource("2_jrpsg")]
-layout_mode = 0
-offset_left = 853.0
-offset_top = 289.0
-offset_right = 1120.0
-offset_bottom = 473.0
-
-[node name="YarnBox3" parent="HBox/ScrollContainer/Canvas" instance=ExtResource("2_jrpsg")]
-layout_mode = 0
-offset_left = 309.0
-offset_top = 454.0
-offset_right = 581.0
-offset_bottom = 690.0
+offset_left = 1272.0
+offset_right = 1280.0
+offset_bottom = 800.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_6p7c0")
 
 [connection signal="pressed" from="HBox/LeftPane/TopToolbar/New" to="." method="_on_new_pressed"]
+[connection signal="pressed" from="HBox/LeftPane/TopToolbar/Save" to="." method="_on_save_pressed"]
+[connection signal="pressed" from="HBox/LeftPane/TopToolbar/Load" to="." method="_on_load_pressed"]
 [connection signal="pressed" from="HBox/LeftPane/TopToolbar/LoadTest" to="." method="_on_load_test_pressed"]
+[connection signal="text_changed" from="HBox/LeftPane/TitleEdit" to="." method="_on_title_text_changed"]
+[connection signal="text_changed" from="HBox/LeftPane/HeaderEdit" to="." method="_on_header_text_changed"]
+[connection signal="text_changed" from="HBox/LeftPane/TextEdit" to="." method="_on_body_text_changed"]

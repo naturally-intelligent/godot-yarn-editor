@@ -314,3 +314,27 @@ func save_to_gdscript(filename: String):
 	file.store_string(script)
 	file = null
 
+func save_yarn(filename: String, outside_yarn := {}) -> bool:
+	var file = FileAccess.open(filename, FileAccess.WRITE)
+	if not file.is_open():
+		print('ERROR: Cant open file ', filename)
+		return false
+	var text := ''
+	if outside_yarn:
+		text = yarn_as_text(outside_yarn)
+	else:
+		text = yarn_as_text(yarn)
+	file.store_string(text)
+	file = null
+	return true
+	
+func yarn_as_text(_yarn: Dictionary) -> String:
+	var text := ''
+	for thread_title in _yarn['threads']:
+		var thread = _yarn['threads'][thread_title]
+		text += "===\n"
+		text += thread['raw_header']
+		text += "---\n"
+		text += thread['raw_body']
+		text += "===\n\n"
+	return text
