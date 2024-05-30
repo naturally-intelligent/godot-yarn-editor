@@ -23,19 +23,16 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="LeftPane" type="VBoxContainer" parent="HBox"]
-custom_minimum_size = Vector2(500, 0)
+custom_minimum_size = Vector2(400, 0)
 layout_mode = 2
 
 [node name="TopToolbar" type="HBoxContainer" parent="HBox/LeftPane"]
+custom_minimum_size = Vector2(0, 32)
 layout_mode = 2
 
 [node name="New" type="Button" parent="HBox/LeftPane/TopToolbar"]
 layout_mode = 2
 text = "NEW"
-
-[node name="LoadTest" type="Button" parent="HBox/LeftPane/TopToolbar"]
-layout_mode = 2
-text = "LOAD (test)"
 
 [node name="Save" type="Button" parent="HBox/LeftPane/TopToolbar"]
 layout_mode = 2
@@ -44,6 +41,18 @@ text = "SAVE"
 [node name="Load" type="Button" parent="HBox/LeftPane/TopToolbar"]
 layout_mode = 2
 text = "LOAD"
+
+[node name="VerticalSort" type="Button" parent="HBox/LeftPane/TopToolbar"]
+layout_mode = 2
+text = "V|Sort"
+
+[node name="HorizontalSort" type="Button" parent="HBox/LeftPane/TopToolbar"]
+layout_mode = 2
+text = "H|Sort"
+
+[node name="LoadTest" type="Button" parent="HBox/LeftPane/TopToolbar"]
+layout_mode = 2
+text = "LoadTest"
 
 [node name="HSeparator1" type="HSeparator" parent="HBox/LeftPane"]
 layout_mode = 2
@@ -61,6 +70,22 @@ layout_mode = 2
 text = "TITLE"
 alignment = 1
 
+[node name="HeaderEdit" type="TextEdit" parent="HBox/LeftPane"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 2
+text = "header: value"
+wrap_mode = 1
+
+[node name="Resizable" type="Control" parent="HBox/LeftPane/HeaderEdit"]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+mouse_filter = 2
+script = ExtResource("2_xiv2h")
+mode = 1
+active_handles = 2
+
 [node name="TextEdit" type="TextEdit" parent="HBox/LeftPane"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -75,6 +100,10 @@ layout_mode = 2
 [node name="BottomToolbar" type="HBoxContainer" parent="HBox/LeftPane"]
 layout_mode = 2
 alignment = 2
+
+[node name="Fit" type="Button" parent="HBox/LeftPane/BottomToolbar"]
+layout_mode = 2
+text = "FIT"
 
 [node name="Delete" type="Button" parent="HBox/LeftPane/BottomToolbar"]
 layout_mode = 2

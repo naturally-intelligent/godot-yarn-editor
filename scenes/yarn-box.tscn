@@ -4,6 +4,7 @@
 [ext_resource type="Script" path="res://scenes/yarn-box.gd" id="1_sxn1s"]
 
 [node name="YarnBox" type="Button"]
+z_index = 1
 offset_right = 370.0
 offset_bottom = 388.0
 script = ExtResource("1_sxn1s")

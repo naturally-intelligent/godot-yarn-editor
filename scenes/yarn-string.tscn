@@ -1,0 +1,22 @@
+[gd_scene load_steps=2 format=3 uid="uid://bpp2xomvg87no"]
+
+[ext_resource type="Script" path="res://scenes/yarn-string.gd" id="1_lqm55"]
+
+[node name="YarnString" type="Line2D"]
+points = PackedVector2Array(0, 0, 0, 64)
+width = 4.0
+begin_cap_mode = 2
+end_cap_mode = 2
+script = ExtResource("1_lqm55")
+
+[node name="Label" type="Label" parent="."]
+offset_left = 6.0
+offset_top = 18.0
+offset_right = 128.0
+offset_bottom = 41.0
+text = "connection"
+vertical_alignment = 1
+
+[node name="Arrow" type="Polygon2D" parent="."]
+position = Vector2(0, 63)
+polygon = PackedVector2Array(-7, 0, 0, 8, 7, 0)

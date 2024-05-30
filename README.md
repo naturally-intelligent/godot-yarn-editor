@@ -21,3 +21,10 @@ Godot is just the framework for the app, but in the future, turning it into addo
 ## Status
 
 Loads basic yarn files and generates initial thread boxes, drag/drop and resize. Still very early!
+
+## Credits
+
+Using:
+- Eranot Resizable addon
+- Godot Yarn Importer
+

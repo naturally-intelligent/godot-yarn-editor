@@ -75,6 +75,8 @@ func new_yarn_thread() -> Dictionary:
 	thread['tags'] = [] # unused
 	thread['fibres'] = []
 	thread['header'] = {} # all the command before dialog, like title: intro
+	thread['raw_body'] = ''
+	thread['raw_header'] = ''
 	return thread
 
 # Internally create a new fibre (during loading)
@@ -136,6 +138,7 @@ func load_yarn(path: String) -> Dictionary:
 				if line == '---':
 					header = false
 				else:
+					thread['raw_header'] += line + "\n"
 					var split := line.split(': ', true, 2)
 					if split.size() == 2:
 						thread['header'][split[0]] = split[1]
@@ -159,6 +162,7 @@ func load_yarn(path: String) -> Dictionary:
 				thread = new_yarn_thread()
 			# fibre read mode
 			else:
+				thread['raw_body'] += line + "\n"
 				var fibre := new_yarn_fibre(line)
 				if fibre:
 					thread['fibres'].append(fibre)
