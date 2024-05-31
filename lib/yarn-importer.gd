@@ -367,6 +367,13 @@ func yarn_body_fibres(raw_body: String) -> Array:
 			fibres.append(fibre)
 	return fibres
 
+func new_yarn(file := '') -> Dictionary:
+	var new_yarn := {}
+	new_yarn['threads'] = {}
+	new_yarn['start'] = ''
+	new_yarn['file'] = file
+	return new_yarn
+	
 # HEADER ATTRIBUTES
 
 func set_attribute(thread: Dictionary, attribute: String, value: String) -> Dictionary:

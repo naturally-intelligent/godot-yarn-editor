@@ -27,18 +27,19 @@ var section_level_sizings := {}
 
 func _ready() -> void:
 	yarn_importer = YarnImporter.new()
+	yarn = yarn_importer.new_yarn()
 	clear_canvas()
 	clear_editor()
 	set_status("Ready")
 	# test
-	_on_load_test_pressed()
+	#_on_load_test_pressed()
 	
 # FILES
 
 func _on_new_pressed() -> void:
 	current_file = 'user://yarns/new.yarn.txt'
 	%Filename.text = current_file
-	yarn = {}
+	yarn = yarn_importer.new_yarn(current_file)
 	clear_canvas()
 	set_status("New")
 
@@ -475,11 +476,12 @@ func _on_create_node_pressed() -> void:
 	var yarn_box: YarnBox = yarn_box_tscn.instantiate()
 	yarn_box.yarn_editor = self
 	yarn_box.parse_thread(yarn, thread_title)
-	yarn_box.position = Vector2(1,1)
+	yarn_box.position = Vector2(4,8)
 	yarn_box.connect("pressed", Callable(self, "_on_thread_pressed").bind(thread_title, yarn_box))
 	if %ShowHeaders.button_pressed or not %ShowTexts.button_pressed:
 		yarn_box.update_content(%ShowHeaders.button_pressed, %ShowTexts.button_pressed)
 	%Canvas.add_child(yarn_box)
+	yarn_box.grab_focus()
 	yarn_boxes[thread_title] = yarn_box
 	connect_box_strings(thread_title)
 	update_editor(thread_title)
