@@ -1,4 +1,4 @@
-# Godot Yarn Editor
+# Godot Yarn Editor v1.0
 A viewer/editor for Yarn text files.
 
 <p align="center">
@@ -13,15 +13,18 @@ Can't seem to find just a basic Yarn editor that isn't in a browser..
 And also works with my yarn custom mods...
 As text-edited yarn files get larger and larger, the need for visualization also grows...
 
-The plan is to have a visualizer so that we can see broken/dead end paths, etc,
-while also keeping text-friendly manual editing at the forefront of any saves.
+A visualizer that can see broken/dead end paths, etc,
+while also keeping support for text-friendly manual editing (writing) at the forefront.
 
 Viewing Yarn files is the focus of this editor, creating + editing them is secondary.
-It will still be recommended to do most of that by hand, and using the GYE for visual overviews and tweaking.
+It will still be recommended to do most of that by hand, and using this app for visual overviews and tweaking.
+Saving your yarn files with this may add unwanted cruft. Backup your files before overwriting them!
 
 ## Tree Sorting
 
-A future feature planned is adding algorithms for auto-arrangement of trees.
+Currently a vertical auto-sort of trees, loops, and stranded solo sections exists.
+It's not perfect but it's decent and can quickly help identify any issues with your branches.
+For the future, adding additional algorithms for better arrangements, or alternate arrangements, may be added.
 
 ## Godot
 

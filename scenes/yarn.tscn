@@ -27,9 +27,16 @@ grow_vertical = 2
 custom_minimum_size = Vector2(400, 0)
 layout_mode = 2
 
+[node name="Label" type="Label" parent="HBox/LeftPane"]
+layout_mode = 2
+text = "Godot Yarn Editor v1.0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="TopToolbar" type="HBoxContainer" parent="HBox/LeftPane"]
 custom_minimum_size = Vector2(0, 32)
 layout_mode = 2
+alignment = 1
 
 [node name="New" type="Button" parent="HBox/LeftPane/TopToolbar"]
 layout_mode = 2
