@@ -110,6 +110,8 @@ func build_canvas():
 		if yarn_box.position.y > widest_y:
 			widest_y = yarn_box.position.y
 		yarn_box.connect("pressed", Callable(self, "_on_thread_pressed").bind(thread_title, yarn_box))
+		if %ShowHeaders.button_pressed or not %ShowTexts.button_pressed:
+			yarn_box.update_content(%ShowHeaders.button_pressed, %ShowTexts.button_pressed)
 		%Canvas.add_child(yarn_box)
 		if verbose:
 			print("Added thread: ", thread_title)
@@ -138,18 +140,19 @@ func connect_box_strings(thread_title: String, first_build := false):
 	var yarn_thread = yarn['threads'][thread_title]
 	for fibre: Dictionary in yarn_thread['fibres']:
 		if fibre['kind'] == 'choice':
-			var text: String = fibre['text']
 			var marker: String = fibre['marker']
 			if marker in yarn_boxes:
-				var matching_box = yarn_boxes[marker]
-				var string: YarnString = yarn_string_tscn.instantiate()
-				var from_position = yarn_box.get_string_starting_point(marker, matching_box)
-				var to_position = matching_box.get_string_destination_point(marker, yarn_box)
-				string.set_string_line(from_position, to_position)
-				string.set_label(marker)
-				remember_box_string(thread_title, marker, string)
-				# while we could store these inside each box, its annoying to handle coordinates
-				%Canvas.add_child(string)
+				if marker != thread_title: # prevent self-reference
+					if not has_box_string(thread_title, marker): # prevent duplicates
+						var matching_box = yarn_boxes[marker]
+						var string: YarnString = yarn_string_tscn.instantiate()
+						var from_position = yarn_box.get_string_starting_point(marker, matching_box)
+						var to_position = matching_box.get_string_destination_point(marker, yarn_box)
+						string.set_string_line(from_position, to_position)
+						string.set_label(marker)
+						remember_box_string(thread_title, marker, string)
+						# while we could store these inside each box, its annoying to handle coordinates
+						%Canvas.add_child(string)
 			else:
 				# only need to show this warning on first load
 				if first_build:
@@ -163,7 +166,13 @@ func reconnect_box_strings(thread_title: String, reconnect_neighbors := true):
 			for check_marker in yarn_strings[check_title]:
 				if check_marker == thread_title:
 					reconnect_box_strings(check_title, false)
-				
+
+func has_box_string(thread_title: String, marker: String) -> bool:
+	if thread_title in yarn_strings:
+		if marker in yarn_strings[thread_title]:
+			return true
+	return false
+	
 func remember_box_string(thread_title: String, marker: String, yarn_string: YarnString):
 	if not thread_title in yarn_strings:
 		yarn_strings[thread_title] = {}
@@ -195,7 +204,7 @@ func clear_editor():
 	%NodeHeader.text = ''
 	%NodeText.text = ''
 	current_thread = ''
-	%UpdateHeader.disabled = false
+	%UpdateHeader.disabled = true
 		
 func _on_thread_pressed(thread_title: String, yarn_box):
 	update_editor(thread_title)
@@ -209,7 +218,7 @@ func update_editor(thread_title: String):
 	%NodeHeader.text = yarn_thread['raw_header']
 	%NodeText.text = yarn_thread['raw_body']
 	current_thread = thread_title
-	%UpdateHeader.disabled = true
+	%UpdateHeader.disabled = false
 
 func update_thread(thread_title: String, section: String, attribute: String, value: String):
 	yarn['threads'][thread_title][section][attribute] = value
@@ -231,6 +240,16 @@ func _on_header_text_changed():
 func _on_update_header_pressed() -> void:
 	if current_thread and current_thread in yarn_boxes:
 		var old_thread = yarn['threads'][current_thread]
+		# update body
+		if true:
+			#var old_text = old_thread['raw_body']
+			#if %NodeText.text != old_text:
+			var new_fibres = yarn_importer.yarn_body_fibres(%NodeText.text)
+			yarn['threads'][current_thread]['fibres'] = new_fibres
+			reconnect_box_strings(current_thread)
+			var yarn_box: YarnBox = yarn_boxes[current_thread]
+			yarn_box.parse_thread(yarn, current_thread)
+		# update header
 		var new_attributes = yarn_importer.yarn_header_attributes(%NodeHeader.text)
 		if not 'title' in new_attributes:
 			set_status("Missing 'title' in header. Ignoring")
@@ -250,7 +269,8 @@ func _on_update_header_pressed() -> void:
 			var yarn_box: YarnBox = yarn_boxes[current_thread]
 			yarn_box.parse_thread(yarn, current_thread)
 			reconnect_box_strings(current_thread)
-
+		
+	
 func _on_body_text_changed():
 	if current_thread and current_thread in yarn_boxes:
 		yarn['threads'][current_thread]['raw_body'] = %NodeText.text
@@ -288,6 +308,8 @@ func _on_vertical_sort_pressed() -> void:
 	const section_padding = 200
 	const level_padding = 10
 	const order_padding = 20
+	const level_height = 200
+	const order_width = 250
 	const top_margin = 15
 	const left_margin = 10
 	var widest_x := 0
@@ -306,7 +328,7 @@ func _on_vertical_sort_pressed() -> void:
 					order = 1.5
 				if yarn_box.section_kind == 'solo':
 					order += 0.5
-				section_pos = yarn_box.level*Vector2(0,200+level_padding) + order*Vector2(250+order_padding,0)
+				section_pos = yarn_box.level*Vector2(0,level_height+level_padding) + order*Vector2(order_width+order_padding,0)
 				if level_size.y < section_pos.y:
 					level_size.y = section_pos.y
 				yarn_box.position = section_size + section_pos + Vector2(left_margin,top_margin)
@@ -333,7 +355,6 @@ func collect_thread_sort_data():
 		var yarn_thread = yarn['threads'][thread_title]
 		for fibre: Dictionary in yarn_thread['fibres']:
 			if fibre['kind'] == 'choice':
-				var text: String = fibre['text']
 				var marker: String = fibre['marker']
 				if marker in yarn_boxes:
 					var matching_box = yarn_boxes[marker]
@@ -406,3 +427,13 @@ func mark_positions() -> void:
 		yarn_box.mark_layout()
 	if current_thread:
 		update_editor(current_thread)
+
+func _on_show_headers_toggled(toggled_on: bool) -> void:
+	for thread_title: String in yarn_boxes:
+		var yarn_box: YarnBox = yarn_boxes[thread_title]
+		yarn_box.update_content(%ShowHeaders.button_pressed, %ShowTexts.button_pressed)
+
+func _on_show_text_toggled(toggled_on: bool) -> void:
+	for thread_title: String in yarn_boxes:
+		var yarn_box: YarnBox = yarn_boxes[thread_title]
+		yarn_box.update_content(%ShowHeaders.button_pressed, %ShowTexts.button_pressed)

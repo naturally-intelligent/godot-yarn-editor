@@ -51,6 +51,15 @@ func parse_thread(yarn: Dictionary, thread_title: String):
 		var vec_x = int(vec_split[0])
 		var vec_y = int(vec_split[1])
 		size = Vector2(vec_x, vec_y)
+	# check missin threads
+	var problem := false
+	for fibre in thread['fibres']:
+		if fibre['kind'] == 'choice':
+			var marker: String = fibre['marker']
+			if not marker in yarn['threads']:
+				problem = true
+				break
+	%BadConnections.visible = problem
 	
 func _input(event: InputEvent):
 	if event is InputEventMouseButton and event.button_index == 1:
@@ -83,7 +92,18 @@ func _input(event: InputEvent):
 
 func update_strings():
 	yarn_editor.reconnect_box_strings(title)
-			
+
+func update_content(show_header: bool, show_text: bool):
+	var thread: Dictionary = yarn_editor.yarn['threads'][title]
+	var text := ''
+	if show_header:
+		text += thread['raw_header']
+		if show_text:
+			text += "---\n"
+	if show_text:
+		text += thread['raw_body']
+	%Text.text = text
+	
 func _on_mouse_entered() -> void:
 	if not _dragging:
 		_mouse_focused = true

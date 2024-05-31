@@ -357,7 +357,15 @@ func yarn_header_attributes(raw_header: String) -> Dictionary:
 					thread_kind = title_split[0]
 				header['title'] = thread_title
 	return header
-	
+
+func yarn_body_fibres(raw_body: String) -> Array:
+	var fibres := []
+	for line in raw_body.split("\n"):
+		var fibre := new_yarn_fibre(line)
+		if fibre:
+			fibres.append(fibre)
+	return fibres
+
 # HEADER ATTRIBUTES
 
 func set_attribute(thread: Dictionary, attribute: String, value: String) -> Dictionary:
