@@ -50,10 +50,12 @@ layout_mode = 2
 text = "V|Sort"
 
 [node name="HorizontalSort" type="Button" parent="HBox/LeftPane/TopToolbar"]
+visible = false
 layout_mode = 2
 text = "H|Sort"
 
 [node name="LoadTest" type="Button" parent="HBox/LeftPane/TopToolbar"]
+visible = false
 layout_mode = 2
 text = "LoadTest"
 
@@ -103,7 +105,14 @@ layout_mode = 2
 unique_name_in_owner = true
 auto_translate_mode = 1
 layout_mode = 2
-text = "COMMIT HEADER CHANGES"
+text = "COMMIT HEADER"
+
+[node name="SavePositions" type="Button" parent="HBox/LeftPane/BottomToolbar"]
+unique_name_in_owner = true
+auto_translate_mode = 1
+visible = false
+layout_mode = 2
+text = "MARK POSITIONS"
 
 [node name="DeleteNode" type="Button" parent="HBox/LeftPane/BottomToolbar"]
 layout_mode = 2

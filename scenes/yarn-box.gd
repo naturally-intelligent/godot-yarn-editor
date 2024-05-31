@@ -149,6 +149,10 @@ func closest_point(origin: Vector2, targets: Array, closest_distance := 1000000.
 	if closest:
 		return closest
 	return origin
+
+func mark_layout():
+	yarn_editor.update_thread(title, "header", "position", str(position.x) + ',' + str(position.y))
+	yarn_editor.update_thread(title, "header", "size", str(size.x) + ',' + str(size.y))
 	
 # RESIZE
 
@@ -164,3 +168,12 @@ func reset_sort_data():
 	section = 0
 	level = 0
 	order = 0
+
+# DEBUG
+
+func debug_sort():
+	set_debug(section_kind+" S="+str(section)+" L="+str(level)+" O="+str(order))
+	
+func set_debug(text: String):
+	%Debug.text = text
+	%Debug.visible = true

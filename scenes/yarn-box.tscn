@@ -17,7 +17,7 @@ bg_color = Color(0.118581, 0.118581, 0.118581, 1)
 
 [node name="YarnBox" type="Button"]
 z_index = 1
-offset_right = 295.0
+offset_right = 228.0
 offset_bottom = 123.0
 theme_override_styles/focus = SubResource("StyleBoxFlat_5lq1m")
 theme_override_styles/hover = SubResource("StyleBoxFlat_3iuru")
@@ -80,6 +80,11 @@ visible = false
 custom_minimum_size = Vector2(14, 14)
 layout_mode = 2
 color = Color(0.674871, 0.120933, 0.135097, 1)
+
+[node name="Debug" type="Label" parent="VBoxContainer/BottomPanel/MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 9
 
 [node name="Resizable" type="Control" parent="."]
 anchors_preset = 0

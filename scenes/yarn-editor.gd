@@ -23,6 +23,7 @@ const yarn_string_tscn = preload("res://scenes/yarn-string.tscn")
 
 # sorted
 var section_owners := {}
+var section_level_sizings := {}
 
 func _ready() -> void:
 	yarn_importer = YarnImporter.new()
@@ -98,7 +99,7 @@ func build_canvas():
 		yarn_box.parse_thread(yarn, thread_title)
 		# auto positioning
 		auto_position.x += yarn_box.size.x + default_spacing_x
-		if auto_position.x > 1600:
+		if auto_position.x > 1200:
 			auto_position.y += yarn_box.size.y + default_spacing_y
 			auto_position.x = default_margin_x
 		if not yarn_box.custom_position:
@@ -135,7 +136,6 @@ func update_canvas_size(widest_x: int, widest_y: int):
 func connect_box_strings(thread_title: String, first_build := false):
 	var yarn_box = yarn_boxes[thread_title]
 	var yarn_thread = yarn['threads'][thread_title]
-	yarn_box.reset_sort_data()
 	for fibre: Dictionary in yarn_thread['fibres']:
 		if fibre['kind'] == 'choice':
 			var text: String = fibre['text']
@@ -171,19 +171,19 @@ func remember_box_string(thread_title: String, marker: String, yarn_string: Yarn
 
 func clear_box_strings(thread_title: String):
 	if thread_title in yarn_strings:
-		for marker in yarn_strings[thread_title]:
+		for marker: String in yarn_strings[thread_title]:
 			var yarn_string = yarn_strings[thread_title][marker]
 			yarn_string.queue_free()
 		yarn_strings[thread_title] = {}
 
 func delete_box_strings(thread_title: String):
 	if thread_title in yarn_strings:
-		for marker in yarn_strings[thread_title]:
+		for marker: String in yarn_strings[thread_title]:
 			var yarn_string = yarn_strings[thread_title][marker]
 			yarn_string.queue_free()
 		yarn_strings.erase(thread_title)
 	for title_test in yarn_strings:
-		for marker in yarn_strings[title_test]:
+		for marker: String in yarn_strings[title_test]:
 			if marker == thread_title:
 				yarn_strings[title_test][marker].queue_free()
 				yarn_strings[title_test].erase(marker)
@@ -278,34 +278,58 @@ func _on_delete_pressed() -> void:
 func _on_vertical_sort_pressed() -> void:
 	if not yarn:
 		return
+	# data sort
 	set_status("Starting data sort...")
 	await get_tree().process_frame
 	collect_thread_sort_data()
+	# visually sort
 	set_status("Starting visual sort...")
 	await get_tree().process_frame
-	# TODO
-	#var section_position := Vector2.ZERO
-	#for section: int in section_owners:
-		#var level_size 
-		#for thread_title in yarn_boxes:
-			#var yarn_box: YarnBox = yarn_boxes[thread_title]
-			#if yarn_box.section == section:
-				#var calc_pos := Vector2.ZERO
-				#calc_pos = section_position + yarn_box.level * 
-				#section_position += 
-				#yarn_box.position = calc_pos
-			#
+	const section_padding = 200
+	const level_padding = 10
+	const order_padding = 20
+	const top_margin = 15
+	const left_margin = 10
+	var widest_x := 0
+	var widest_y := 0
+	# section loop (automatically sorted to tree/loop/solo)
+	var section_size := Vector2.ZERO
+	for section: int in section_owners:
+		var level_size := Vector2.ZERO
+		for thread_title: String in yarn_boxes:
+			var yarn_box: YarnBox = yarn_boxes[thread_title]
+			if yarn_box.section == section:
+				var box_rect := yarn_box.get_rect()
+				var section_pos := Vector2.ZERO
+				var order = yarn_box.order
+				if yarn_box.section_kind == 'tree' and order == 0:
+					order = 1.5
+				if yarn_box.section_kind == 'solo':
+					order += 0.5
+				section_pos = yarn_box.level*Vector2(0,200+level_padding) + order*Vector2(250+order_padding,0)
+				if level_size.y < section_pos.y:
+					level_size.y = section_pos.y
+				yarn_box.position = section_size + section_pos + Vector2(left_margin,top_margin)
+				if yarn_box.position.x > widest_x:
+					widest_x = yarn_box.position.x
+				if yarn_box.position.y > widest_y:
+					widest_y = yarn_box.position.y
+				reconnect_box_strings(thread_title)
+				#yarn_box.debug_sort()
+		section_size += level_size + Vector2(0, section_padding)
+	update_canvas_size(widest_x, widest_y)
+	mark_positions()
 	set_status("Done sort!")
 
 func collect_thread_sort_data():
 	section_owners = {}
 	# reset all
-	for thread_title in yarn_boxes:
-		var yarn_box = yarn_boxes[thread_title]
+	for thread_title: String in yarn_boxes:
+		var yarn_box: YarnBox = yarn_boxes[thread_title]
 		yarn_box.reset_sort_data()
 	# collect pointing threads
-	for thread_title in yarn_boxes:
-		var yarn_box = yarn_boxes[thread_title]
+	for thread_title: String in yarn_boxes:
+		var yarn_box: YarnBox = yarn_boxes[thread_title]
 		var yarn_thread = yarn['threads'][thread_title]
 		for fibre: Dictionary in yarn_thread['fibres']:
 			if fibre['kind'] == 'choice':
@@ -317,9 +341,9 @@ func collect_thread_sort_data():
 					matching_box.threads_pointing_in.append(thread_title)
 	# find tree sections
 	var section_counter := 0
-	for thread_title in yarn_boxes:
-		var yarn_box = yarn_boxes[thread_title]
-		if yarn_box.threads_pointing_in.is_empty():
+	for thread_title: String in yarn_boxes:
+		var yarn_box: YarnBox = yarn_boxes[thread_title]
+		if yarn_box.threads_pointing_in.is_empty() and not yarn_box.threads_pointing_out.is_empty():
 			yarn_box.is_top_level = true
 			section_counter += 1
 			yarn_box.section = section_counter
@@ -329,19 +353,45 @@ func collect_thread_sort_data():
 		if yarn_box.threads_pointing_out.is_empty():
 			yarn_box.is_bottom_level = true
 	# find looped sections
-	for thread_title in yarn_boxes:
-		var yarn_box = yarn_boxes[thread_title]
+	for thread_title: String in yarn_boxes:
+		var yarn_box: YarnBox = yarn_boxes[thread_title]
 		if yarn_box.section == 0:
-			section_counter += 1
+			if not yarn_box.threads_pointing_in.is_empty() and not yarn_box.threads_pointing_out.is_empty():
+				section_counter += 1
+				yarn_box.section = section_counter
+				yarn_box.section_kind = 'loop'
+				mark_section_threads(thread_title)
+				section_owners[section_counter] = thread_title
+	# find remaining stranded/solo threads and put them in bunches of sections
+	const max_stranded_per_section = 4
+	var stranded_per_section = max_stranded_per_section
+	for thread_title: String in yarn_boxes:
+		var yarn_box: YarnBox = yarn_boxes[thread_title]
+		if yarn_box.section == 0:
+			stranded_per_section += 1
+			if stranded_per_section >= max_stranded_per_section:
+				section_counter += 1
+				stranded_per_section = 0
+				section_owners[section_counter] = thread_title
 			yarn_box.section = section_counter
-			yarn_box.section_kind = 'loop'
+			yarn_box.order = stranded_per_section
+			yarn_box.section_kind = 'solo'
 			mark_section_threads(thread_title)
-			section_owners[section_counter] = thread_title
-			
+	# find best sizes per level
+	var level_sizes = {}
+	for thread_title: String in yarn_boxes:
+		var yarn_box: YarnBox = yarn_boxes[thread_title]
+		if not yarn_box.section in level_sizes:
+			level_sizes[yarn_box.section] = {}
+		if not yarn_box.level in level_sizes[yarn_box.section]:
+			level_sizes[yarn_box.section][yarn_box.level] = []
+		level_sizes[yarn_box.section][yarn_box.level].append(yarn_box.get_rect())
+	section_level_sizings = {}
+	
 func mark_section_threads(thread_title: String, level := 1):
 	var yarn_box = yarn_boxes[thread_title]
 	var order := 0
-	for marker in yarn_box.threads_pointing_out:
+	for marker: String in yarn_box.threads_pointing_out:
 		var matching_box = yarn_boxes[marker]
 		if matching_box.section == 0:
 			matching_box.section = yarn_box.section
@@ -350,4 +400,9 @@ func mark_section_threads(thread_title: String, level := 1):
 			matching_box.order = order
 			mark_section_threads(marker, level+1)
 			
-			
+func mark_positions() -> void:
+	for thread_title: String in yarn_boxes:
+		var yarn_box: YarnBox = yarn_boxes[thread_title]
+		yarn_box.mark_layout()
+	if current_thread:
+		update_editor(current_thread)
