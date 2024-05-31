@@ -334,12 +334,14 @@ func yarn_as_text(_yarn: Dictionary) -> String:
 	var text := ''
 	for thread_title in _yarn['threads']:
 		var thread = _yarn['threads'][thread_title]
-		text += "===\n"
-		text += thread['raw_header']
+		text += append_newline(thread['raw_header'])
 		text += "---\n"
-		text += thread['raw_body']
+		text += append_newline(thread['raw_body'])
 		text += "===\n\n"
 	return text
+
+func append_newline(text: String) -> String:
+	return text.strip_edges(false, true) + "\n"
 
 func yarn_header_attributes(raw_header: String) -> Dictionary:
 	var header := {}

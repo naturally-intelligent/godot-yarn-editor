@@ -25,6 +25,10 @@ Currently a vertical auto-sort of trees, loops, and stranded solo sections exist
 It's not perfect but it's decent and can quickly help identify any issues with your branches.
 For the future, adding additional algorithms for better arrangements, or alternate arrangements, may be added.
 
+## Yarn
+
+This is built around an older version of Yarn with choices like "[[text|choice]]". You should still be able to edit newer versions of Yarn files but their jump connections won't be detected. Sorry! Will need an updated Yarn importer for this.
+
 ## Godot
 
 This is not be meant as an addon for Godot, just a stand-alone yarn editing app.
