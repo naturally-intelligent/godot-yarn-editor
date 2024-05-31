@@ -163,6 +163,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_6p7c0")
 [connection signal="pressed" from="HBox/LeftPane/TopToolbar/New" to="." method="_on_new_pressed"]
 [connection signal="pressed" from="HBox/LeftPane/TopToolbar/Save" to="." method="_on_save_pressed"]
 [connection signal="pressed" from="HBox/LeftPane/TopToolbar/Load" to="." method="_on_load_pressed"]
+[connection signal="pressed" from="HBox/LeftPane/TopToolbar/VerticalSort" to="." method="_on_vertical_sort_pressed"]
 [connection signal="pressed" from="HBox/LeftPane/TopToolbar/LoadTest" to="." method="_on_load_test_pressed"]
 [connection signal="text_changed" from="HBox/LeftPane/NodeHeader" to="." method="_on_header_text_changed"]
 [connection signal="text_changed" from="HBox/LeftPane/NodeText" to="." method="_on_body_text_changed"]

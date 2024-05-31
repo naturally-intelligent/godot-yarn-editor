@@ -12,6 +12,17 @@ var _last_mouse := Vector2.ZERO
 var _last_position := Vector2.ZERO
 
 var custom_position := false
+var locked := false
+
+# sort-related
+var threads_pointing_in := [] 
+var threads_pointing_out := [] 
+var is_top_level := false
+var is_bottom_level := false
+var section := 0 # grouping
+var level := 0 # vertical level
+var order := 0 # horizontal order in the level
+var section_kind := 'tree' # tree / loop
 
 var yarn_editor: YarnEditor
 
@@ -145,3 +156,11 @@ func _on_resized():
 	yarn_editor.update_thread(title, "header", "size", str(size.x) + ',' + str(size.y))
 	yarn_editor.reconnect_box_strings(title)
 
+func reset_sort_data():
+	threads_pointing_in = [] 
+	threads_pointing_out = [] 
+	is_top_level = false	
+	is_bottom_level = false	
+	section = 0
+	level = 0
+	order = 0

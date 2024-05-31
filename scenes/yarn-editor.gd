@@ -21,6 +21,9 @@ const yarn_string_tscn = preload("res://scenes/yarn-string.tscn")
 @export var default_margin_x := 20
 @export var default_margin_y := 20
 
+# sorted
+var section_owners := {}
+
 func _ready() -> void:
 	yarn_importer = YarnImporter.new()
 	clear_canvas()
@@ -132,6 +135,7 @@ func update_canvas_size(widest_x: int, widest_y: int):
 func connect_box_strings(thread_title: String, first_build := false):
 	var yarn_box = yarn_boxes[thread_title]
 	var yarn_thread = yarn['threads'][thread_title]
+	yarn_box.reset_sort_data()
 	for fibre: Dictionary in yarn_thread['fibres']:
 		if fibre['kind'] == 'choice':
 			var text: String = fibre['text']
@@ -256,11 +260,94 @@ func _on_body_text_changed():
 # DELETE
 
 func delete_thread(thread_name: String):
+	clear_editor()
+	yarn.erase(thread_name)
 	delete_box_strings(thread_name)
 	yarn_boxes[thread_name].queue_free()
 	yarn_boxes.erase(thread_name)
+	#clear_canvas()
+	#build_canvas()
 	set_status("Deleted " + thread_name)
 
 func _on_delete_pressed() -> void:
 	if current_thread:
 		delete_thread(current_thread)
+
+# AUTOSORT
+
+func _on_vertical_sort_pressed() -> void:
+	if not yarn:
+		return
+	set_status("Starting data sort...")
+	await get_tree().process_frame
+	collect_thread_sort_data()
+	set_status("Starting visual sort...")
+	await get_tree().process_frame
+	# TODO
+	#var section_position := Vector2.ZERO
+	#for section: int in section_owners:
+		#var level_size 
+		#for thread_title in yarn_boxes:
+			#var yarn_box: YarnBox = yarn_boxes[thread_title]
+			#if yarn_box.section == section:
+				#var calc_pos := Vector2.ZERO
+				#calc_pos = section_position + yarn_box.level * 
+				#section_position += 
+				#yarn_box.position = calc_pos
+			#
+	set_status("Done sort!")
+
+func collect_thread_sort_data():
+	section_owners = {}
+	# reset all
+	for thread_title in yarn_boxes:
+		var yarn_box = yarn_boxes[thread_title]
+		yarn_box.reset_sort_data()
+	# collect pointing threads
+	for thread_title in yarn_boxes:
+		var yarn_box = yarn_boxes[thread_title]
+		var yarn_thread = yarn['threads'][thread_title]
+		for fibre: Dictionary in yarn_thread['fibres']:
+			if fibre['kind'] == 'choice':
+				var text: String = fibre['text']
+				var marker: String = fibre['marker']
+				if marker in yarn_boxes:
+					var matching_box = yarn_boxes[marker]
+					yarn_box.threads_pointing_out.append(marker)
+					matching_box.threads_pointing_in.append(thread_title)
+	# find tree sections
+	var section_counter := 0
+	for thread_title in yarn_boxes:
+		var yarn_box = yarn_boxes[thread_title]
+		if yarn_box.threads_pointing_in.is_empty():
+			yarn_box.is_top_level = true
+			section_counter += 1
+			yarn_box.section = section_counter
+			yarn_box.section_kind = 'tree'
+			mark_section_threads(thread_title)
+			section_owners[section_counter] = thread_title
+		if yarn_box.threads_pointing_out.is_empty():
+			yarn_box.is_bottom_level = true
+	# find looped sections
+	for thread_title in yarn_boxes:
+		var yarn_box = yarn_boxes[thread_title]
+		if yarn_box.section == 0:
+			section_counter += 1
+			yarn_box.section = section_counter
+			yarn_box.section_kind = 'loop'
+			mark_section_threads(thread_title)
+			section_owners[section_counter] = thread_title
+			
+func mark_section_threads(thread_title: String, level := 1):
+	var yarn_box = yarn_boxes[thread_title]
+	var order := 0
+	for marker in yarn_box.threads_pointing_out:
+		var matching_box = yarn_boxes[marker]
+		if matching_box.section == 0:
+			matching_box.section = yarn_box.section
+			matching_box.level = level
+			order = order + 1
+			matching_box.order = order
+			mark_section_threads(marker, level+1)
+			
+			
