@@ -169,6 +169,7 @@ func load_yarn(path: String) -> Dictionary:
 					thread['fibres'].append(fibre)
 	else:
 		print('ERROR: Yarn file missing: ', path)
+		return {}
 	return new_yarn
 
 # Main logic for node handling

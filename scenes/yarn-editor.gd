@@ -65,13 +65,28 @@ func save_yarn(file: String) -> bool:
 		return false
 
 func _on_save_pressed():
-	save_yarn(%Filename.text)
-
+	if %Filename.text:
+		save_yarn(%Filename.text)
+	else:
+		$SaveAsFileDialog.visible = true
+		
 func _on_load_pressed():
-	load_yarn(%Filename.text)
+	$OpenFileDialog.visible = true
+	#load_yarn(%Filename.text)
 
 func _on_load_test_pressed() -> void:
 	load_yarn("user://yarns/sample2.yarn.txt")
+
+func _on_file_dialog_file_selected(path: String) -> void:
+	$OpenFileDialog.visible = false
+	load_yarn(path)
+
+func _on_save_as_pressed() -> void:
+	$SaveAsFileDialog.visible = true
+
+func _on_save_as_file_dialog_file_selected(path: String) -> void:
+	$SaveAsFileDialog.visible = false
+	save_yarn(path)
 
 func set_status(message: String):
 	%Status.text = "Status: " + message
@@ -204,7 +219,7 @@ func clear_editor():
 	%NodeHeader.text = ''
 	%NodeText.text = ''
 	current_thread = ''
-	%UpdateHeader.disabled = true
+	update_buttons()
 		
 func _on_thread_pressed(thread_title: String, yarn_box):
 	update_editor(thread_title)
@@ -218,7 +233,7 @@ func update_editor(thread_title: String):
 	%NodeHeader.text = yarn_thread['raw_header']
 	%NodeText.text = yarn_thread['raw_body']
 	current_thread = thread_title
-	%UpdateHeader.disabled = false
+	update_buttons()
 
 func update_thread(thread_title: String, section: String, attribute: String, value: String):
 	yarn['threads'][thread_title][section][attribute] = value
@@ -235,7 +250,7 @@ func recalculate_raw_header(thread_title: String):
 	yarn['threads'][thread_title]['raw_header'] = raw_header
 
 func _on_header_text_changed():
-	%UpdateHeader.disabled = false
+	update_buttons()
 	
 func _on_update_header_pressed() -> void:
 	if current_thread and current_thread in yarn_boxes:
@@ -269,7 +284,6 @@ func _on_update_header_pressed() -> void:
 			var yarn_box: YarnBox = yarn_boxes[current_thread]
 			yarn_box.parse_thread(yarn, current_thread)
 			reconnect_box_strings(current_thread)
-		
 	
 func _on_body_text_changed():
 	if current_thread and current_thread in yarn_boxes:
@@ -290,6 +304,10 @@ func delete_thread(thread_name: String):
 	set_status("Deleted " + thread_name)
 
 func _on_delete_pressed() -> void:
+	if current_thread:
+		$DeleteConfirmationDialog.visible = true
+	
+func _on_delete_confirmation_dialog_confirmed() -> void:
 	if current_thread:
 		delete_thread(current_thread)
 
@@ -437,3 +455,44 @@ func _on_show_text_toggled(toggled_on: bool) -> void:
 	for thread_title: String in yarn_boxes:
 		var yarn_box: YarnBox = yarn_boxes[thread_title]
 		yarn_box.update_content(%ShowHeaders.button_pressed, %ShowTexts.button_pressed)
+
+# CREATE A NODE
+
+func _on_create_node_pressed() -> void:
+	var thread = yarn_importer.new_yarn_thread()
+	thread['raw_header'] = %NodeHeader.text
+	thread['raw_body'] = %NodeText.text
+	thread['header'] = yarn_importer.yarn_header_attributes(thread['raw_header'])
+	thread['fibres'] = yarn_importer.yarn_body_fibres(thread['raw_body'])
+	if not 'title' in thread['header']:
+		set_status("DENIED: No title set.")
+		return
+	var thread_title = thread['header']['title']
+	if thread_title in yarn['threads']:
+		set_status("DENIED: Already have this title.")
+		return
+	yarn['threads'][thread_title] = thread
+	var yarn_box: YarnBox = yarn_box_tscn.instantiate()
+	yarn_box.yarn_editor = self
+	yarn_box.parse_thread(yarn, thread_title)
+	yarn_box.position = Vector2(1,1)
+	yarn_box.connect("pressed", Callable(self, "_on_thread_pressed").bind(thread_title, yarn_box))
+	if %ShowHeaders.button_pressed or not %ShowTexts.button_pressed:
+		yarn_box.update_content(%ShowHeaders.button_pressed, %ShowTexts.button_pressed)
+	%Canvas.add_child(yarn_box)
+	yarn_boxes[thread_title] = yarn_box
+	connect_box_strings(thread_title)
+	update_editor(thread_title)
+	
+func _on_clear_pressed() -> void:
+	clear_editor()
+
+func update_buttons():
+	if current_thread:
+		%UpdateHeader.disabled = false
+		%DeleteNode.disabled = false
+	else:
+		%UpdateHeader.disabled = true
+		%DeleteNode.disabled = true
+
+	

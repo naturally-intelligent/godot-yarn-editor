@@ -10,11 +10,10 @@ Built in Godot 4.3
 ## Purpose
 
 Can't seem to find just a basic Yarn editor that isn't in a browser..
-And also works with my yarn custom mods...
+And also works with yarn custom mods...
 As text-edited yarn files get larger and larger, the need for visualization also grows...
 
-A visualizer that can see broken/dead end paths, etc,
-while also keeping support for text-friendly manual editing (writing) at the forefront.
+A visualizer that can see broken/dead end paths, etc, while also keeping support for text-friendly manual editing (writing) at the forefront.
 
 Viewing Yarn files is the focus of this editor, creating + editing them is secondary.
 It will still be recommended to do most of that by hand, and using this app for visual overviews and tweaking.
@@ -34,9 +33,16 @@ Godot is just the framework for the app, but in the future, turning it into addo
 
 Currently uses Godot 4.3dev5, was supposed to be 4.2 but accidentally was opened in 4.3 and now 4.2 can't open yarn_box.tscn.
 
+## Future Ideas
+
+- Nicer UI design / theme
+- Config file for custom font sizes
+- Patch in custom dialog fonts and special logic for the rich text views
+
 ## Credits
 
 Addons / Libraries:
 - Eranot Resizable Addon [https://github.com/Eranot/godot-resizable]
 - Godot Yarn Importer [https://github.com/naturally-intelligent/godot-yarn-importer]
 
+This is using a modified version of Godot Yarn Importer, to support real-time changes. However, nothing was changed in the data structure.
